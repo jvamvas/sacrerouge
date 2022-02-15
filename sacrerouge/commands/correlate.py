@@ -162,17 +162,29 @@ def compute_system_level_correlations(X: np.ndarray, Y: np.ndarray, ci_method: s
     kendall = functools.partial(system_level_corr, kendalltau)
 
     r, r_pvalue = pearson(X, Y, return_pvalue=True)
-    r_lower, r_upper = corr_ci(pearson, X, Y, ci_method, alpha, two_tailed, kwargs=pearson_kwargs)
+    r_lower, r_upper, *_ = corr_ci(pearson, X, Y, ci_method, alpha, two_tailed, kwargs=pearson_kwargs)
+    if pearson_kwargs.get("return_sample_correlations", False):
+        r_sample_correlations = _[0]
+    else:
+        r_sample_correlations = None
 
     rho, rho_pvalue = spearman(X, Y, return_pvalue=True)
-    rho_lower, rho_upper = corr_ci(spearman, X, Y, ci_method, alpha, two_tailed, kwargs=spearman_kwargs)
+    rho_lower, rho_upper, *_ = corr_ci(spearman, X, Y, ci_method, alpha, two_tailed, kwargs=spearman_kwargs)
+    if spearman_kwargs.get("return_sample_correlations", False):
+        rho_sample_correlations = _[0]
+    else:
+        rho_sample_correlations = None
 
     tau, tau_pvalue = kendall(X, Y, return_pvalue=True)
-    tau_lower, tau_upper = corr_ci(kendall, X, Y, ci_method, alpha, two_tailed, kwargs=kendall_kwargs)
+    tau_lower, tau_upper, *_ = corr_ci(kendall, X, Y, ci_method, alpha, two_tailed, kwargs=kendall_kwargs)
+    if kendall_kwargs.get("return_sample_correlations", False):
+        tau_sample_correlations = _[0]
+    else:
+        tau_sample_correlations = None
 
     num_summarizers, num_instances = X.shape
 
-    return {
+    data = {
         'num_summarizers': num_summarizers,
         'num_instances': num_instances,
         'ci_method': ci_method,
@@ -197,6 +209,13 @@ def compute_system_level_correlations(X: np.ndarray, Y: np.ndarray, ci_method: s
             'upper': tau_upper
         },
     }
+    if r_sample_correlations is not None:
+        data["pearson"]["sample_correlations"] = r_sample_correlations
+    if rho_sample_correlations is not None:
+        data["spearman"]["sample_correlations"] = rho_sample_correlations
+    if tau_sample_correlations is not None:
+        data["kendall"]["sample_correlations"] = tau_sample_correlations
+    return data
 
 
 def compute_global_correlations(X: np.ndarray, Y: np.ndarray, ci_method: str, alpha: float, two_tailed: bool,
@@ -209,17 +228,29 @@ def compute_global_correlations(X: np.ndarray, Y: np.ndarray, ci_method: str, al
     kendall = functools.partial(global_corr, kendalltau)
 
     r, r_pvalue = pearson(X, Y, return_pvalue=True)
-    r_lower, r_upper = corr_ci(pearson, X, Y, ci_method, alpha, two_tailed, kwargs=pearson_kwargs)
+    r_lower, r_upper, *_ = corr_ci(pearson, X, Y, ci_method, alpha, two_tailed, kwargs=pearson_kwargs)
+    if pearson_kwargs.get("return_sample_correlations", False):
+        r_sample_correlations = _[0]
+    else:
+        r_sample_correlations = None
 
     rho, rho_pvalue = spearman(X, Y, return_pvalue=True)
-    rho_lower, rho_upper = corr_ci(spearman, X, Y, ci_method, alpha, two_tailed, kwargs=spearman_kwargs)
+    rho_lower, rho_upper, *_ = corr_ci(spearman, X, Y, ci_method, alpha, two_tailed, kwargs=spearman_kwargs)
+    if spearman_kwargs.get("return_sample_correlations", False):
+        rho_sample_correlations = _[0]
+    else:
+        rho_sample_correlations = None
 
     tau, tau_pvalue = kendall(X, Y, return_pvalue=True)
-    tau_lower, tau_upper = corr_ci(kendall, X, Y, ci_method, alpha, two_tailed, kwargs=kendall_kwargs)
+    tau_lower, tau_upper, *_ = corr_ci(kendall, X, Y, ci_method, alpha, two_tailed, kwargs=kendall_kwargs)
+    if kendall_kwargs.get("return_sample_correlations", False):
+        tau_sample_correlations = _[0]
+    else:
+        tau_sample_correlations = None
 
     num_summaries = int((~np.isnan(X)).sum())  # number of non-NaN scores
 
-    return {
+    data = {
         'num_summaries': num_summaries,
         'ci_method': ci_method,
         'alpha': alpha,
@@ -228,7 +259,7 @@ def compute_global_correlations(X: np.ndarray, Y: np.ndarray, ci_method: str, al
             'r': r,
             'p_value': r_pvalue,
             'lower': r_lower,
-            'upper': r_upper
+            'upper': r_upper,
         },
         'spearman': {
             'rho': rho,
@@ -243,6 +274,13 @@ def compute_global_correlations(X: np.ndarray, Y: np.ndarray, ci_method: str, al
             'upper': tau_upper
         },
     }
+    if r_sample_correlations is not None:
+        data["pearson"]["sample_correlations"] = r_sample_correlations
+    if rho_sample_correlations is not None:
+        data["spearman"]["sample_correlations"] = rho_sample_correlations
+    if tau_sample_correlations is not None:
+        data["kendall"]["sample_correlations"] = tau_sample_correlations
+    return data
 
 
 def _plot_values(values1: List[float],
