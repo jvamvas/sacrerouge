@@ -215,7 +215,9 @@ def bootstrap_ci(corr_func: SummaryCorrFunc,
                  Y: np.ndarray,
                  sample_func: Callable,
                  alpha: float = 0.05,
-                 num_samples: int = 1000) -> Tuple[float, float]:
+                 num_samples: int = 1000,
+                 return_sample_correlations: bool = False,
+                 ) -> Tuple[float, float]:
     """
     Calculates a bootstrap-based confidence interval using the correlation function and X and Y. The `corr_func` should
     be the system-, summary- or global level correlations with a Pearson, Spearman, or Kendall function passed as its
@@ -232,7 +234,10 @@ def bootstrap_ci(corr_func: SummaryCorrFunc,
             samples.append(r)
     lower = np.percentile(samples, alpha / 2 * 100)
     upper = np.percentile(samples, (1.0 - alpha / 2) * 100)
-    return lower, upper
+    output = (lower, upper)
+    if return_sample_correlations:
+        output = output + (samples,)
+    return output
 
 
 def _get_n(corr_func: SummaryCorrFunc, X: np.ndarray) -> int:
