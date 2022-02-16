@@ -39,24 +39,27 @@ def _run_test(corr_func,
     spearman = functools.partial(corr_func, spearmanr)
     kendall = functools.partial(corr_func, kendalltau)
 
-    r_pvalue = corr_diff_test(pearson, X, Y, Z, test_method, two_tailed)
-    rho_pvalue = corr_diff_test(spearman, X, Y, Z, test_method, two_tailed)
-    tau_pvalue = corr_diff_test(kendall, X, Y, Z, test_method, two_tailed)
+    r_pvalue, r_statistic = corr_diff_test(pearson, X, Y, Z, test_method, two_tailed, kwargs={"return_test_statistic": True})
+    rho_pvalue, rho_statistic = corr_diff_test(spearman, X, Y, Z, test_method, two_tailed, kwargs={"return_test_statistic": True})
+    tau_pvalue, tau_statistic = corr_diff_test(kendall, X, Y, Z, test_method, two_tailed, kwargs={"return_test_statistic": True})
 
     # For some reason, without casting `pvalue <= alpha` to a bool, the result
     # would be type `bool_` which was not json serializable
     return {
         'pearson': {
             'pvalue': r_pvalue,
-            'is_significant': bool(r_pvalue <= alpha)
+            'is_significant': bool(r_pvalue <= alpha),
+            "test_statistic": r_statistic,
         },
         'spearman': {
             'pvalue': rho_pvalue,
-            'is_significant': bool(rho_pvalue <= alpha)
+            'is_significant': bool(rho_pvalue <= alpha),
+            "test_statistic": rho_statistic,
         },
         'kendall': {
             'pvalue': tau_pvalue,
-            'is_significant': bool(tau_pvalue <= alpha)
+            'is_significant': bool(tau_pvalue <= alpha),
+            "test_statistic": tau_statistic,
         },
     }
 
