@@ -1,4 +1,6 @@
-FIXTURES_ROOT = 'sacrerouge/tests/fixtures'
+from pathlib import Path
+
+FIXTURES_ROOT = Path(__file__).parent.parent.parent / 'tests/fixtures'
 
 MULTILING_DOCUMENTS = f'{FIXTURES_ROOT}/data/multiling2011/documents.jsonl'
 MULTILING_SUMMARIES = f'{FIXTURES_ROOT}/data/multiling2011/summaries.jsonl'
