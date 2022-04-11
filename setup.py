@@ -22,4 +22,5 @@ setuptools.setup(
     entry_points={'console_scripts': ['sacrerouge=sacrerouge.__main__:main']},
     python_requires='>=3.6',
     install_requires=requirements,
+    include_package_data=True,
 )
