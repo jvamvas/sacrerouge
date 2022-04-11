@@ -1,1 +1,1 @@
-global-include *.jsonl
+graft fixtures
