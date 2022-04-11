@@ -1,1 +1,1 @@
-include sacrerouge/tests/fixtures/data/multiling2011/*.jsonl
+global-include *.jsonl
